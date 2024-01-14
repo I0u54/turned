@@ -26,6 +26,10 @@ public interface ParticipationRepository extends JpaRepository<Participation,Lon
     Optional<Participation> findFirstById(long id);
 
     List<Participation> findByPayedIsFalseAndPayDateLessThanEqual(Timestamp currentTimestamp);
+    List<Participation> findFirst7ByOrderByIdDesc();
+
+   
+
 
     
 }

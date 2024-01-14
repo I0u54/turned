@@ -18,6 +18,7 @@ public class ParticipationDto {
     private boolean payed;
     private Timestamp createdAt;
     private Timestamp updatedAt;
+    // private DaretDto daret;
 
     public static ParticipationDto toParticipationDto(Participation participation) {
         ParticipationDto participationDto = new ParticipationDto();
@@ -28,6 +29,7 @@ public class ParticipationDto {
         participationDto.setPayed(participation.isPayed());
         participationDto.setCreatedAt(participation.getCreatedAt());
         participationDto.setUpdatedAt(participation.getUpdatedAt());
+        // participationDto.setDaret(DaretDto.toDaretDto(participation.getDaret()));;
 
         return participationDto;
     }

@@ -133,6 +133,22 @@ public class ParticipationService {
         return null;
 
     }
+    public List<Participation> participations(String token) {
+
+        UserDto user = userTokenService.getUserOfToken(token);
+        if (user != null) {
+            if(user.isAdmin()){
+
+                List<Participation> participations = participationRepository.findFirst7ByOrderByIdDesc();
+                return participations;
+            }
+           
+
+
+        }
+        return null;
+
+    }
 
     public boolean reparticipate(String token, long id) {
 

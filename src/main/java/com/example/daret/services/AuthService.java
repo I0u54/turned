@@ -3,6 +3,7 @@ package com.example.daret.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -167,6 +168,22 @@ public class AuthService {
              
     
         }
+    public List<UserDto> latestUsers(String token){
+        UserDto user = userTokenService.getUserOfToken(token);
+        if(user != null){
+            if(user.isAdmin()){
+                List<User> users = userRepository.findFirst6ByOrderByIdDesc();
+                List<UserDto> newList = new ArrayList<>();
+                for(User u:users){
+                    newList.add(UserDto.toUserDto(u));
+                }
+                return newList;
+
+            }
+        }
+        return null ;
+
+    }
     
 
 }

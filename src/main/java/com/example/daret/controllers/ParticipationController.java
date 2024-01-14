@@ -67,6 +67,20 @@ public class ParticipationController {
         result.put("error", "user not found");
         return new ResponseEntity<>(result, HttpStatus.NOT_FOUND);
     }
+    @GetMapping("allParticipations")
+    public ResponseEntity allParticipations(@RequestHeader("Authorization") String token) {
+        Map<String, Object> result = new HashMap<>();
+        List<Participation> participations = participationService.participations(userTokenService.extractToken(token));
+        if (participations != null) {
+
+            result.put("participations", participations);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+
+        }
+
+        result.put("error", "unathorized action !");
+        return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED );
+    }
 
     @PostMapping("reparticipate/{id}")
     public ResponseEntity reparticipate(@RequestHeader("Authorization") String token, @PathVariable long id) {

@@ -6,6 +6,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.daret.models.User;
+
+import java.util.List;
 import java.util.Optional;
 
 
@@ -19,5 +21,15 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findUserByToken(@Param("token") String token);
     Optional<User> findByEmailAndPassword(String email, String password);
     Optional<User> findFirstById(long id);
+
+   
+    @Query("SELECT COUNT(u) FROM User u ")
+    Long countUsers(); 
+    
+    @Query(value = "SELECT COUNT(u.id) FROM User u WHERE u.id IN (SELECT user_id FROM participation)", nativeQuery = true)
+    Long countActiveUsers();
+
+    List<User> findFirst6ByOrderByIdDesc();
+
 
 }
