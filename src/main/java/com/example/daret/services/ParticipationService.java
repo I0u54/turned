@@ -196,7 +196,10 @@ public class ParticipationService {
                 Optional<Participation> participation = participationRepository.findFirstById(id);
                 if(participation.isPresent()){
                     Participation currentParticipation = participation.get();
-                    if(currentParticipation.getDaret().getStatus() != "activated"){
+                    if(currentParticipation.getDaret().getStatus().equals("activated") == false){
+                        Daret currentDaret = currentParticipation.getDaret();
+                        currentDaret.setAvailable(currentDaret.getAvailable() + currentParticipation.getQuantity());
+                        daretRepository.save(currentDaret);
                         participationRepository.delete(currentParticipation);
                         return true;
                     }
