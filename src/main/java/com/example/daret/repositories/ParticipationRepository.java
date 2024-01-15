@@ -21,6 +21,7 @@ public interface ParticipationRepository extends JpaRepository<Participation,Lon
     // Optional<Participation> findFirstByDaretAndPayDateIsNotNullOrderByPayDateDesc(Daret daret);
     // List<Participation> findByDaretAndQuantityAndPayDateIsNull(Daret daret, double quantity);
     List<Participation> findByDaretOrderByCreatedAtAsc(Daret daret);
+    Long countByDaret(Daret daret);
     List<Participation> findByUserOrderByPayDateAsc(User user);
 
     Optional<Participation> findFirstById(long id);

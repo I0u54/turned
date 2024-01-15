@@ -13,6 +13,7 @@ import com.example.daret.dtos.GenralStatsDto;
 import com.example.daret.dtos.UserDto;
 import com.example.daret.models.Daret;
 import com.example.daret.repositories.DaretRepository;
+import com.example.daret.repositories.ParticipationRepository;
 import com.example.daret.repositories.UserRepository;
 import com.example.daret.requests.StoreDaretRequest;
 
@@ -21,14 +22,17 @@ public class DaretService {
     private final DaretRepository daretRepository;
     private AuthService authService;
     private UserTokenService userTokenService;
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final ParticipationRepository participationRepository;
+    
 
     @Autowired
-    public DaretService(DaretRepository daretRepository,AuthService authService,UserTokenService userTokenService, UserRepository userRepository){
+    public DaretService(DaretRepository daretRepository,AuthService authService,UserTokenService userTokenService, UserRepository userRepository,ParticipationRepository participationRepository){
         this.daretRepository = daretRepository;
         this.authService = authService;
         this.userTokenService = userTokenService;
         this.userRepository = userRepository;
+        this.participationRepository = participationRepository;
 
 
     }
@@ -92,10 +96,15 @@ public class DaretService {
         UserDto user = userTokenService.getUserOfToken(token);
         if(user != null){
             if(user.isAdmin()){
-                Optional<Daret> daret = daretRepository.findFirstById(id);
+                Optional<Daret> daret = daretRepository.findFirstByIdAndStatus(id,"unactivated");
                 if(daret.isPresent()){
-                    daretRepository.delete(daret.get());
-                     return true ;
+                    long countParticipations = participationRepository.countByDaret(daret.get());
+                    if(countParticipations <= 0 ){
+
+                        daretRepository.delete(daret.get());
+                         return true ;
+                    }
+
                 }
                
 

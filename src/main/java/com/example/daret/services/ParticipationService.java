@@ -188,4 +188,23 @@ public class ParticipationService {
 
         
     }
+    public boolean deleteParticipation(String token,long id){
+        
+        UserDto user = userTokenService.getUserOfToken(token);
+        if(user != null){
+            if (user.isAdmin()){
+                Optional<Participation> participation = participationRepository.findFirstById(id);
+                if(participation.isPresent()){
+                    Participation currentParticipation = participation.get();
+                    if(currentParticipation.getDaret().getStatus() != "activated"){
+                        participationRepository.delete(currentParticipation);
+                        return true;
+                    }
+                }
+
+            }
+        }
+        return false ;
+
+    }
 }

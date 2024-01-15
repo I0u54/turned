@@ -12,6 +12,7 @@ import com.example.daret.models.Daret;
 
 public interface DaretRepository extends JpaRepository<Daret, Long> {
     Optional<Daret> findFirstById(long id);
+    Optional<Daret> findFirstByIdAndStatus(long id,String status);
 
     @Query("SELECT NEW com.example.daret.dtos.CountMonth(COUNT(d), MONTH(d.createdAt)) " +
            "FROM Daret d " +
