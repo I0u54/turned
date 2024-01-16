@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query(value = "SELECT COUNT(u.id) FROM User u WHERE u.id IN (SELECT user_id FROM participation)", nativeQuery = true)
     Long countActiveUsers();
 
-    List<User> findFirst6ByOrderByIdDesc();
+    List<User> findFirst7ByOrderByIdDesc();
 
 
 }

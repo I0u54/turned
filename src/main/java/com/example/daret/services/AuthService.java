@@ -172,7 +172,7 @@ public class AuthService {
         UserDto user = userTokenService.getUserOfToken(token);
         if(user != null){
             if(user.isAdmin()){
-                List<User> users = userRepository.findFirst6ByOrderByIdDesc();
+                List<User> users = userRepository.findFirst7ByOrderByIdDesc();
                 List<UserDto> newList = new ArrayList<>();
                 for(User u:users){
                     newList.add(UserDto.toUserDto(u));

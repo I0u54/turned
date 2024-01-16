@@ -122,5 +122,17 @@ public class ParticipationController {
 
 
     }
+    @PostMapping("remindPeople")
+    public ResponseEntity remindPeople(@RequestHeader("Authorization") String token){
+        Map<String, Object> result = new HashMap<>();
+        int count = participationService.remindPeople(userTokenService.extractToken(token));
+        if(count != -1){
+
+            result.put("message","an email has been sent to every user that need to reparticipate , "+count+" people has been reminded");
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        result.put("error", "unathorized action !");
+        return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+    }
     
 }

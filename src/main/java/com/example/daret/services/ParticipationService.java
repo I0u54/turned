@@ -26,14 +26,16 @@ public class ParticipationService {
     private final DaretRepository daretRepository;
     private final ParticipationRepository participationRepository;
     private final UserRepository userRepository;
+    private MailService mailService;
 
     @Autowired
     public ParticipationService(UserTokenService userTokenService, DaretRepository daretRepository,
-            ParticipationRepository participationRepository, UserRepository userRepository) {
+            ParticipationRepository participationRepository, UserRepository userRepository, MailService mailService) {
         this.userTokenService = userTokenService;
         this.daretRepository = daretRepository;
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
+        this.mailService = mailService;
     }
 
     public boolean makeParticipation(String token, StoreParticipationRequest request) {
@@ -133,17 +135,16 @@ public class ParticipationService {
         return null;
 
     }
+
     public List<Participation> participations(String token) {
 
         UserDto user = userTokenService.getUserOfToken(token);
         if (user != null) {
-            if(user.isAdmin()){
+            if (user.isAdmin()) {
 
                 List<Participation> participations = participationRepository.findFirst7ByOrderByIdDesc();
                 return participations;
             }
-           
-
 
         }
         return null;
@@ -158,14 +159,14 @@ public class ParticipationService {
             if (participation.isPresent()) {
                 Participation currentParticipation = participation.get();
                 Daret currentDaret = currentParticipation.getDaret();
-                
+
                 if (currentParticipation.getUser().getId() == user.getId()) {
                     ChronoUnit chronoUnit = currentDaret.getDType().equals("month") ? ChronoUnit.MONTHS
-                    : currentDaret.getDType().equals("week") ? ChronoUnit.WEEKS : ChronoUnit.DAYS;
+                            : currentDaret.getDType().equals("week") ? ChronoUnit.WEEKS : ChronoUnit.DAYS;
 
                     LocalDateTime lastCreatedAtDateTime = currentParticipation.getCreatedAt().toLocalDateTime();
                     LocalDateTime updatedDateTime = lastCreatedAtDateTime.plus(1, chronoUnit);
-            
+
                     if (Timestamp.valueOf(updatedDateTime).before(new Timestamp(System.currentTimeMillis()))) {
                         currentParticipation.setCreatedAt(Timestamp.valueOf(updatedDateTime));
                         participationRepository.save(currentParticipation);
@@ -176,27 +177,29 @@ public class ParticipationService {
 
         }
         return false;
- 
+
     }
+
     public void pay() {
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        List<Participation> unpaidParticipations = participationRepository.findByPayedIsFalseAndPayDateLessThanEqual(currentTimestamp);
+        List<Participation> unpaidParticipations = participationRepository
+                .findByPayedIsFalseAndPayDateLessThanEqual(currentTimestamp);
         for (Participation participation : unpaidParticipations) {
             participation.setPayed(true);
         }
         participationRepository.saveAll(unpaidParticipations);
 
-        
     }
-    public boolean deleteParticipation(String token,long id){
-        
+
+    public boolean deleteParticipation(String token, long id) {
+
         UserDto user = userTokenService.getUserOfToken(token);
-        if(user != null){
-            if (user.isAdmin()){
+        if (user != null) {
+            if (user.isAdmin()) {
                 Optional<Participation> participation = participationRepository.findFirstById(id);
-                if(participation.isPresent()){
+                if (participation.isPresent()) {
                     Participation currentParticipation = participation.get();
-                    if(currentParticipation.getDaret().getStatus().equals("activated") == false){
+                    if (currentParticipation.getDaret().getStatus().equals("activated") == false) {
                         Daret currentDaret = currentParticipation.getDaret();
                         currentDaret.setAvailable(currentDaret.getAvailable() + currentParticipation.getQuantity());
                         daretRepository.save(currentDaret);
@@ -207,7 +210,38 @@ public class ParticipationService {
 
             }
         }
-        return false ;
+        return false;
 
     }
+
+    public int remindPeople(String token) {
+        UserDto user = userTokenService.getUserOfToken(token);
+        if (user != null) {
+            if(user.isAdmin()){
+
+                int count = 0;
+                List<Participation> participations = participationRepository.findByActivatedDarets();
+                for (Participation p : participations) {
+                    Daret currentDaret = p.getDaret();
+                    ChronoUnit chronoUnit = currentDaret.getDType().equals("month") ? ChronoUnit.MONTHS
+                            : currentDaret.getDType().equals("week") ? ChronoUnit.WEEKS : ChronoUnit.DAYS;
+                    LocalDateTime lastCreatedAtDateTime = p.getCreatedAt().toLocalDateTime();
+                    LocalDateTime updatedDateTime = lastCreatedAtDateTime.plus(1, chronoUnit);
+                    if (Timestamp.valueOf(updatedDateTime).before(new Timestamp(System.currentTimeMillis()))) {
+                        mailService.sendEmail(p.getUser().getEmail(), "Reminder to reparticipate",
+                                "hey " + p.getUser().getName() + " you need to reparticipate in the turned number "
+                                        + p.getDaret().getId() + "with an amount of "
+                                        + p.getDaret().getPrice() * p.getQuantity() + " MAD" + ".");
+                        count++;
+    
+                    }
+                }
+                return count;
+            }
+
+        }
+        return -1;
+
+    }
+
 }

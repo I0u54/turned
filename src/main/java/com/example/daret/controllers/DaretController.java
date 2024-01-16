@@ -79,7 +79,7 @@ public class DaretController {
 
     }
 
-    @PutMapping("updateDaret/{id}")
+    @PutMapping("darets_update/{id}")
     public ResponseEntity updaEntity(@RequestHeader("Authorization") String token, @PathVariable long id,
             @Valid @RequestBody StoreDaretRequest request) {
         Map<String, Object> result = new HashMap<>();

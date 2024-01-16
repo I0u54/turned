@@ -71,15 +71,21 @@ public class DaretService {
         UserDto user = userTokenService.getUserOfToken(token);
         if(user != null){
             if(user.isAdmin()){
-                Optional<Daret> daret = daretRepository.findFirstById(id);
+                Optional<Daret> daret =daretRepository.findFirstByIdAndStatus(id,"unactivated");
                 if(daret.isPresent()){
-                    Daret newDaret = daret.get();
-                    newDaret.setPrice(request.getPrice());
-                    newDaret.setPNumber(request.getPnumber());
-                    newDaret.setDuration(request.getDuration());
-                    newDaret.setDType(request.getDtype());
-                    daretRepository.save(newDaret);
-                    return true;
+                    long countParticipations = participationRepository.countByDaret(daret.get());
+                    if(countParticipations <= 0 ){
+
+                        Daret newDaret = daret.get();
+                        newDaret.setPrice(request.getPrice());
+                        newDaret.setPNumber(request.getPnumber());
+                        newDaret.setDuration(request.getDuration());
+                        newDaret.setDType(request.getDtype());
+                        newDaret.setAvailable(request.getPnumber());
+                        daretRepository.save(newDaret);
+                        return true;
+                    }
+                    
                 }
 
             }

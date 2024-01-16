@@ -29,6 +29,9 @@ public interface ParticipationRepository extends JpaRepository<Participation,Lon
     List<Participation> findByPayedIsFalseAndPayDateLessThanEqual(Timestamp currentTimestamp);
     List<Participation> findFirst7ByOrderByIdDesc();
 
+    @Query("SELECT p FROM Participation p WHERE p.daret.id IN (SELECT d.id FROM Daret d WHERE d.status = 'activated')")
+    List<Participation> findByActivatedDarets();
+
    
 
 
