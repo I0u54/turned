@@ -103,6 +103,18 @@ public class DaretController {
         return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
 
     }
+    @PostMapping("endDaret/{id}")
+    public ResponseEntity endDaret(@RequestHeader("Authorization") String token, @PathVariable long id) {
+        Map<String, Object> result = new HashMap<>();
+        if (daretService.endDaret(userTokenService.extractToken(token), id)) {
+            result.put("message", "Daret has been ended with success ");
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        result.put("error", "you have no permission to do this action ! ");
+        return new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+
+    }
+    
 
     @GetMapping("/daretsPerMonth")
     public ResponseEntity daretsPerMonth(@RequestHeader("Authorization") String token) {

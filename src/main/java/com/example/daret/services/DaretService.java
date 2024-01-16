@@ -1,5 +1,7 @@
 package com.example.daret.services;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -116,6 +118,29 @@ public class DaretService {
 
             }
             return false;
+        }
+        return false;
+
+    }
+    public boolean endDaret(String token,long id){
+        UserDto user = userTokenService.getUserOfToken(token);
+        if(user != null){
+            if(user.isAdmin()){
+                Optional<Daret> daret = daretRepository.findById(id);
+                if(daret.isPresent()){
+                    Daret currentDaret = daret.get();
+                    LocalDateTime expiredAt = currentDaret.getExpired_at().toLocalDateTime() ; 
+                    if(Timestamp.valueOf(expiredAt).before(new Timestamp(System.currentTimeMillis()))){
+                        currentDaret.setStatus("expired");
+                        daretRepository.save(currentDaret);
+                        return true;
+                        
+                    }
+
+                }
+               
+
+            }
         }
         return false;
 
