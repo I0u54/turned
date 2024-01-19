@@ -37,10 +37,14 @@ public class Participation {
      @JsonManagedReference
     private Daret daret;
     private float quantity;
+    
 
     @Column(nullable = true)
     private Timestamp payDate;
+    private int payCount = 1;
     private boolean payed = false ;
+
+    
     
 
 

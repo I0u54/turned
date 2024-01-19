@@ -159,19 +159,23 @@ public class ParticipationService {
             if (participation.isPresent()) {
                 Participation currentParticipation = participation.get();
                 Daret currentDaret = currentParticipation.getDaret();
+                if (currentParticipation.getPayCount() < currentDaret.getDuration()){
 
-                if (currentParticipation.getUser().getId() == user.getId()) {
-                    ChronoUnit chronoUnit = currentDaret.getDType().equals("month") ? ChronoUnit.MONTHS
-                            : currentDaret.getDType().equals("week") ? ChronoUnit.WEEKS : ChronoUnit.DAYS;
+                    if (currentParticipation.getUser().getId() == user.getId()) {
+                        ChronoUnit chronoUnit = currentDaret.getDType().equals("month") ? ChronoUnit.MONTHS
+                                : currentDaret.getDType().equals("week") ? ChronoUnit.WEEKS : ChronoUnit.DAYS;
+    
+                        LocalDateTime lastCreatedAtDateTime = currentParticipation.getCreatedAt().toLocalDateTime();
+                        LocalDateTime updatedDateTime = lastCreatedAtDateTime.plus(1, chronoUnit);
+    
+                        if (Timestamp.valueOf(updatedDateTime).before(new Timestamp(System.currentTimeMillis()))) {
+                            currentParticipation.setCreatedAt(Timestamp.valueOf(updatedDateTime));
+                            currentParticipation.setPayCount(currentParticipation.getPayCount() + 1 );
+                            participationRepository.save(currentParticipation);
+                            return true;
+                        }
+                }
 
-                    LocalDateTime lastCreatedAtDateTime = currentParticipation.getCreatedAt().toLocalDateTime();
-                    LocalDateTime updatedDateTime = lastCreatedAtDateTime.plus(1, chronoUnit);
-
-                    if (Timestamp.valueOf(updatedDateTime).before(new Timestamp(System.currentTimeMillis()))) {
-                        currentParticipation.setCreatedAt(Timestamp.valueOf(updatedDateTime));
-                        participationRepository.save(currentParticipation);
-                        return true;
-                    }
                 }
             }
 
