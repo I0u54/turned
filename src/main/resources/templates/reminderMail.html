@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Reminder to Reparticipate</title>
+    <style>
+       
+        section {
+            width:100%;
+            font-family: 'Arial', sans-serif;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        
+           
+            margin: 0;
+        }
+
+        #container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            background: linear-gradient(to left, #343A40, #00CED1);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        span {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <section>
+
+        <div id="container">
+            <header>
+                <h1>Turned</h1>
+            </header>
+            
+            <p>Hey <span th:text="${user.name}"></span>, we are from team Turned</p>
+            <p>You need to reparticipate in the turned number <span th:text="${daret.id}"></span> with an amount of <span th:text="${daret.price * quantity}"></span> MAD.</p>
+        </div>
+    </section>
+</body>
+</html>

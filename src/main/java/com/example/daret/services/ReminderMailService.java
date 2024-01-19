@@ -8,32 +8,28 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Service
-public class MailService {
+public class ReminderMailService {
     @Autowired
     private JavaMailSender javaMailSender;
 
     @Autowired
     private TemplateEngine templateEngine;
 
-    public void sendEmail(String to, String subject,String templateName,Context context) {
-        try{
-
+    public void sendEmail(String to, String subject, String templateName, Context context) {
+        try {
             MimeMessageHelper helper = new MimeMessageHelper(javaMailSender.createMimeMessage(), true);
-    
+
             helper.setTo(to);
             helper.setSubject(subject);
-    
+
             String emailContent = templateEngine.process(templateName, context);
-    
+
             helper.setText(emailContent, true);
-    
+
             javaMailSender.send(helper.getMimeMessage());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
-
-
+    
 }

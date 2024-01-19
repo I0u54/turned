@@ -2,6 +2,7 @@ package com.example.daret.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,7 +107,10 @@ public class AuthService {
             prt.setEmail(email); 
             prt.setToken(token);
             passwordResetTokenRepository.save(prt);
-            mailService.sendEmail(email,"Reset password Token","your reset password token : "+token);
+            Context context = new Context();
+            context.setVariable("token", token);
+            context.setVariable("name", user.get().getName());
+            mailService.sendEmail(email,"Password reset token","resetPasswordToken",context);
             return true;
         
     

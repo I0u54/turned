@@ -9,8 +9,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
 
-import com.example.daret.dtos.ParticipationDto;
 import com.example.daret.dtos.UserDto;
 import com.example.daret.models.Daret;
 import com.example.daret.models.Participation;
@@ -26,16 +26,16 @@ public class ParticipationService {
     private final DaretRepository daretRepository;
     private final ParticipationRepository participationRepository;
     private final UserRepository userRepository;
-    private MailService mailService;
+    private ReminderMailService reminderMailService;
 
     @Autowired
     public ParticipationService(UserTokenService userTokenService, DaretRepository daretRepository,
-            ParticipationRepository participationRepository, UserRepository userRepository, MailService mailService) {
+            ParticipationRepository participationRepository, UserRepository userRepository, ReminderMailService reminderMailService) {
         this.userTokenService = userTokenService;
         this.daretRepository = daretRepository;
         this.participationRepository = participationRepository;
         this.userRepository = userRepository;
-        this.mailService = mailService;
+        this.reminderMailService = reminderMailService;
     }
 
     public boolean makeParticipation(String token, StoreParticipationRequest request) {
@@ -232,10 +232,12 @@ public class ParticipationService {
                     LocalDateTime lastCreatedAtDateTime = p.getCreatedAt().toLocalDateTime();
                     LocalDateTime updatedDateTime = lastCreatedAtDateTime.plus(1, chronoUnit);
                     if (Timestamp.valueOf(updatedDateTime).before(new Timestamp(System.currentTimeMillis()))) {
-                        mailService.sendEmail(p.getUser().getEmail(), "Reminder to reparticipate",
-                                "hey " + p.getUser().getName() + " you need to reparticipate in the turned number "
-                                        + p.getDaret().getId() + "with an amount of "
-                                        + p.getDaret().getPrice() * p.getQuantity() + " MAD" + ".");
+                        Context context = new Context();
+                        context.setVariable("user", p.getUser());
+                        context.setVariable("daret", p.getDaret());
+                        context.setVariable("quantity", p.getQuantity());
+                    
+                        reminderMailService.sendEmail(p.getUser().getEmail(), "Reminder to reparticipate", "reminderMail", context);
                         count++;
     
                     }
