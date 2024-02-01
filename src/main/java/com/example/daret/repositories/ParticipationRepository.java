@@ -1,6 +1,7 @@
 package com.example.daret.repositories;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,7 @@ public interface ParticipationRepository extends JpaRepository<Participation,Lon
     // Optional<Participation> findFirstByDaretAndPayDateIsNotNullOrderByPayDateDesc(Daret daret);
     // List<Participation> findByDaretAndQuantityAndPayDateIsNull(Daret daret, double quantity);
     List<Participation> findByDaretOrderByCreatedAtAsc(Daret daret);
+    //List<Participation> findByDaret(Daret daret);
     Long countByDaret(Daret daret);
     List<Participation> findByUserOrderByPayDateAsc(User user);
 
@@ -31,8 +33,6 @@ public interface ParticipationRepository extends JpaRepository<Participation,Lon
 
     @Query("SELECT p FROM Participation p WHERE p.daret.id IN (SELECT d.id FROM Daret d WHERE d.status = 'activated')")
     List<Participation> findByActivatedDarets();
-
-   
 
 
     

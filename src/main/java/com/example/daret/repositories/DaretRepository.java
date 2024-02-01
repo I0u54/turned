@@ -22,4 +22,7 @@ public interface DaretRepository extends JpaRepository<Daret, Long> {
 
     long count();
 
+    
+    
+
 }
