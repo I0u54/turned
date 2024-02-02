@@ -188,6 +188,41 @@ public class AuthService {
         return null ;
 
     }
+    public List<UserDto> getAll(String token){
+        UserDto user = userTokenService.getUserOfToken(token);
+        if(user != null){
+            if(user.isAdmin()){
+                List<User> users = userRepository.findAll();
+                List<UserDto> newList = new ArrayList<>();
+                for(User u:users){
+                    newList.add(UserDto.toUserDto(u));
+                }
+                return newList;
+
+            }
+        }
+        return null ;
+
+    }
+    public boolean giveAdmin(String token,long id){
+        UserDto user = userTokenService.getUserOfToken(token);
+        if(user != null){
+            if(user.isAdmin()){
+                Optional<User> currentUser = userRepository.findFirstById(id);
+                if(currentUser.isPresent()){
+                    User updatedUser = currentUser.get();
+                    updatedUser.setAdmin(!updatedUser.isAdmin());
+                    userRepository.save(updatedUser);
+                    return true;
+                }
+               
+               
+
+            }
+        }
+        return false ;
+
+    }
     
 
 }

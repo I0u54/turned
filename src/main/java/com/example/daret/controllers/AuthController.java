@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -143,6 +143,32 @@ public class AuthController {
         List<UserDto> myList = authService.latestUsers(userTokenService.extractToken(token));
         if (myList != null) {
             result.put("data", myList);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        result.put("error", "you have no permission to do this action ! ");
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+
+    }
+    @GetMapping("/allUsers")
+    public ResponseEntity first100User(@RequestHeader("Authorization") String token) {
+        Map<String, Object> result = new HashMap<>();
+
+        List<UserDto> myList = authService.getAll(userTokenService.extractToken(token));
+        if (myList != null) {
+            result.put("data", myList);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+        result.put("error", "you have no permission to do this action ! ");
+        return new ResponseEntity<>(result, HttpStatus.BAD_REQUEST);
+
+    }
+    @PutMapping("giveAdmin/{id}")
+    public ResponseEntity giveAdmin(@RequestHeader("Authorization") String token,@PathVariable long id) {
+        Map<String, Object> result = new HashMap<>();
+
+        
+        if (authService.giveAdmin(userTokenService.extractToken(token),id)) {
+            result.put("message", "user has been updated with success");
             return new ResponseEntity<>(result, HttpStatus.OK);
         }
         result.put("error", "you have no permission to do this action ! ");

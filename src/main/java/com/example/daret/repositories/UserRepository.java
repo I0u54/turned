@@ -30,6 +30,7 @@ public interface UserRepository extends JpaRepository<User,Long> {
     Long countActiveUsers();
 
     List<User> findFirst7ByOrderByIdDesc();
+   // List<User> findFirst100ByOrderByIdDesc();
 
 
 }
